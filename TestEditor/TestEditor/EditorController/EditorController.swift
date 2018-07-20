@@ -263,6 +263,7 @@ class EditorController: UIViewController {
     
     @IBAction func runButtonTapped(sender: UIButton) {
         if let script = sourceTextView.text {
+            print(script)
             runScript(script + "\n")
         }
     }

@@ -188,7 +188,7 @@
 		CB7F219C20F6585E00999955 /* FileManager+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FileManager+Extension.swift"; sourceTree = "<group>"; };
 		CB7F219E20F65A6400999955 /* PackageRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackageRepository.swift; sourceTree = "<group>"; };
 		CBA1723820F3ADA900012AC5 /* PackagesController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackagesController.swift; sourceTree = "<group>"; };
-		CBB9947320EEAC5F007F307D /* Script.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Script.swift; sourceTree = "<group>"; };
+		CBB9947320EEAC5F007F307D /* Script.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Script.swift; path = ../../../Hop/HopModels/Script.swift; sourceTree = "<group>"; };
 		CBCE3D3720ECC12B00B4ABC0 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		CBCE3D3D20ECCB3600B4ABC0 /* Token.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Token.swift; sourceTree = "<group>"; };
 		CBCE3D3F20ECE6C100B4ABC0 /* SyntaxHighlighter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyntaxHighlighter.swift; sourceTree = "<group>"; };
@@ -531,7 +531,8 @@
 				CB1E984D20EB9B380030A024 /* StandardLibrary */,
 				CB1E986520EB9B380030A024 /* Statements */,
 			);
-			path = Language;
+			name = Language;
+			path = ../../Hop/Language;
 			sourceTree = "<group>";
 		};
 		CBF4065920EBCCF200C1B376 /* Resources */ = {

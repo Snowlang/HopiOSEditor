@@ -26,5 +26,5 @@ struct Program: Loggable {
         importArrayClass(in: context)
         _ = try block?.evaluate(context: context, global: global)
     }
-    
+
 }
