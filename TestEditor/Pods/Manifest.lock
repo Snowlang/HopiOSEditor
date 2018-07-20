@@ -1,0 +1,24 @@
+PODS:
+  - DynamicColor (4.0.2)
+  - MarkdownView (1.3.0)
+  - SwiftyAttributes (4.3.0)
+
+DEPENDENCIES:
+  - DynamicColor
+  - MarkdownView
+  - SwiftyAttributes
+
+SPEC REPOS:
+  https://github.com/CocoaPods/Specs.git:
+    - DynamicColor
+    - MarkdownView
+    - SwiftyAttributes
+
+SPEC CHECKSUMS:
+  DynamicColor: c7adcfe871781a2b39877a5774e452ba51b79eb3
+  MarkdownView: 6cee6c558eed4a012005405066071ef16a042d17
+  SwiftyAttributes: debe9898c1160b4fe14d1c69962d78aaca95fd88
+
+PODFILE CHECKSUM: 9ea3fe971b7b647c0d06364f185a356c23b472e3
+
+COCOAPODS: 1.5.0

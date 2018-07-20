@@ -1,0 +1,25 @@
+/**
+
+    Tutorial 00 - Hello world
+
+*/
+
+import Sys
+
+class Welcome {
+
+   var message = "Hello World!"
+
+   func displayGreatings(#times: Int) {
+      for i in 0 to times {
+         Sys.print(Sys.string(i) + " - " + self.message)
+      }
+   }
+
+}
+
+// Let's use the class!
+
+const welcome = Welcome()
+
+welcome.displayGreatings(3)
