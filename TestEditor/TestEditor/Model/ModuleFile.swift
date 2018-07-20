@@ -6,7 +6,7 @@
 //  Copyright © 2018 poisson florent. All rights reserved.
 //
 
-import UIKit
+import Foundation
 
 struct ModuleFile {
     
