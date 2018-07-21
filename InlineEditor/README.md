@@ -1,5 +1,5 @@
 ## Hop Online Editor
-![Online editor]( Hop/InlineEditor/HopInlineEditor.png  "Online Editor")
+![](https://raw.githubusercontent.com/OMTS/Hop/feature-inline-editor/InlineEditor/HopInlineEditor.png?token=AAlI0sXoO3mRK-8X4ki_NOAG9DHLbALbks5bW7JOwA%3D%3D  "Online Editor")
 
 
 ## Online Editor Roadmap
