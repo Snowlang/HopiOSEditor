@@ -157,8 +157,6 @@ class EditorController: UIViewController {
                                                           in: layoutManager.textContainers[0])
             var viewLineCount = Int(ceil(boundingRect.height / lineHeight))
 
-            print("--> viewLineCount = \(viewLineCount)")
-            
             // Line n-1 fix
             if index == script.lines.count - 2,
                 line.location + line.length >= script.characters.count,

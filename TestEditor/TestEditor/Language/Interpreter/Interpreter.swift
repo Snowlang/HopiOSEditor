@@ -13,8 +13,8 @@ enum InterpreterError: Error {
     case unresolvedIdentifier
     case forbiddenAssignment
     case forbiddenFunctionCall
-    case variableNotDeclared
-    case variableNotInitialized
+    case undeclaredVariable
+    case undefinedVariable
     case classAlreadyDeclared
     case functionAlreadyDeclared
     case functionNotDeclared

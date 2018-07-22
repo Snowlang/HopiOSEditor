@@ -57,6 +57,7 @@ enum Token: String {
     case classToken             = "class"
     case staticToken            = "static"
     case superToken             = "super"
+    case nilToken               = "nil"
     case lf                     // Line feed \n
     case eof                    // End of file
     
@@ -73,7 +74,7 @@ enum Token: String {
     static let reservedKeywords: Set<Token> = [
         .importToken, .ifToken, .elseToken, .forToken, .inToken, .to,
         .step, .whileToken, .breakToken, .continueToken, .funcToken, .returnToken,
-        .variable, constant, classToken, .staticToken, .superToken
+        .variable, constant, classToken, .staticToken, .superToken, .nilToken
     ]
     
 }

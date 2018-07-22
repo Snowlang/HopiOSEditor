@@ -109,58 +109,64 @@ struct BinaryOperatorExpr: Evaluable {
             } else {
                 throw InterpreterError.accessorMemberError
             }
-        } else if let lhsVariable = lhsEvaluation as? Variable,
-            let instance = lhsVariable.value as? Instance {
-            if let rhsIdentifier = rhs as? IdentifierExpr {
-                // Restrain property access if it is accessed from superclass reference
-                if lhsVariable.type != instance.class.type {
-                    guard let superclass = instance.class.getSuperclass(for: lhsVariable.type.hashId) else {
-                        throw InterpreterError.expressionEvaluationError
+        } else if let lhsVariable = lhsEvaluation as? Variable {
+            if let instance = lhsVariable.value as? Instance {
+                if let rhsIdentifier = rhs as? IdentifierExpr {
+                    // Restrain property access if it is accessed from superclass reference
+                    if lhsVariable.type != instance.class.type {
+                        guard let superclass = instance.class.getSuperclass(for: lhsVariable.type.hashId) else {
+                            throw InterpreterError.expressionEvaluationError
+                        }
+                        if !superclass.hasInstanceProperty(with: rhsIdentifier.hashId),
+                            superclass.getClassMember(for: rhsIdentifier.hashId) == nil {
+                            throw InterpreterError.classMemberNotDeclared
+                        }
                     }
-                    if !superclass.hasInstanceProperty(with: rhsIdentifier.hashId),
-                        superclass.getClassMember(for: rhsIdentifier.hashId) == nil {
-                        throw InterpreterError.classMemberNotDeclared
+                    
+                    // Search for property variable in instance symbol table
+                    if let propertyVariable = instance.scope.getSymbolValue(for: rhsIdentifier.hashId) as? Variable {
+                        return propertyVariable
+                        
+                    } else if let propertyVariable = instance.class.getClassMember(for: rhsIdentifier.hashId) as? Variable {
+                        // Then search for property variable in class scope
+                        // Class properties are shared to all instances
+                        return propertyVariable
+                        
+                    } else {
+                        throw InterpreterError.accessorMemberError
                     }
-                }
-                
-                // Search for property variable in instance symbol table
-                if let propertyVariable = instance.scope.getSymbolValue(for: rhsIdentifier.hashId) as? Variable {
-                    return propertyVariable
+                } else if let rhsFunctionCall = rhs as? FunctionCallExpr {
+                    // Restrain method acces if it is accessed from superclass reference
+                    if lhsVariable.type != instance.class.type {
+                        guard let superclass = instance.class.getSuperclass(for: lhsVariable.type.hashId) else {
+                            throw InterpreterError.expressionEvaluationError
+                        }
+                        var methodArgumentNames = [SelfParameter.name]
+                        if let argumentNames = rhsFunctionCall.argumentNames {
+                            methodArgumentNames.append(contentsOf: argumentNames)
+                        }
+                        let methodHashId = Closure.getFunctionSignatureHashId(name: rhsFunctionCall.name,
+                                                                              argumentNames: methodArgumentNames)
+                        if superclass.getClassMember(for: methodHashId) == nil {
+                            throw InterpreterError.classMemberNotDeclared
+                        }
+                    }
                     
-                } else if let propertyVariable = instance.class.getClassMember(for: rhsIdentifier.hashId) as? Variable {
-                    // Then search for property variable in class scope
-                    // Class properties are shared to all instances
-                    return propertyVariable
-                    
+                    let inspectedClass = (lhs is SuperExpr ?
+                        instance.class.superclass! :
+                        instance.class)
+                    return try rhsFunctionCall.evaluateMethod(ofInstance: instance,
+                                                                  inspectedClass: inspectedClass,
+                                                                  context: context,
+                                                                  global: global)
                 } else {
                     throw InterpreterError.accessorMemberError
                 }
-            } else if let rhsFunctionCall = rhs as? FunctionCallExpr {
-                // Restrain method acces if it is accessed from superclass reference
-                if lhsVariable.type != instance.class.type {
-                    guard let superclass = instance.class.getSuperclass(for: lhsVariable.type.hashId) else {
-                        throw InterpreterError.expressionEvaluationError
-                    }
-                    var methodArgumentNames = [SelfParameter.name]
-                    if let argumentNames = rhsFunctionCall.argumentNames {
-                        methodArgumentNames.append(contentsOf: argumentNames)
-                    }
-                    let methodHashId = Closure.getFunctionSignatureHashId(name: rhsFunctionCall.name,
-                                                                          argumentNames: methodArgumentNames)
-                    if superclass.getClassMember(for: methodHashId) == nil {
-                        throw InterpreterError.classMemberNotDeclared
-                    }
-                }
-                
-                let inspectedClass = (lhs is SuperExpr ?
-                    instance.class.superclass! :
-                    instance.class)
-                return try rhsFunctionCall.evaluateMethod(ofInstance: instance,
-                                                              inspectedClass: inspectedClass,
-                                                              context: context,
-                                                              global: global)
+            } else if lhsVariable.value != nil {
+                throw InterpreterError.accessorOwnerError
+
             } else {
-                throw InterpreterError.accessorMemberError
+                throw InterpreterError.undefinedVariable
             }
         } else {
             throw InterpreterError.accessorOwnerError
@@ -172,19 +178,33 @@ struct BinaryOperatorExpr: Evaluable {
             let rhsVariable = try rhs.evaluate(context: context, global: global) as? Variable else {
               throw InterpreterError.expressionEvaluationError
         }
+        
+        guard lhsVariable.type == rhsVariable.type else {
+            throw InterpreterError.binaryOperatorTypeMismatch
+        }
 
-        if let lhsInteger = lhsVariable.value as? Int,
-            let rhsInteger = rhsVariable.value as? Int {
-            return Variable(type: .integer, isConstant: true, value: lhsInteger + rhsInteger)
+        guard let lhsValue = lhsVariable.value else {
+            throw InterpreterError.undefinedVariable
+        }
+        
+        guard let rhsValue = rhsVariable.value else {
+            throw InterpreterError.undefinedVariable
+        }
+        
+        if lhsVariable.type == .integer {
+            return Variable(type: .integer,
+                            isConstant: true,
+                            value: (lhsValue as! Int) + (rhsValue as! Int))
             
-        } else if let lhsReal = lhsVariable.value as? Double,
-            let rhsReal = rhsVariable.value as? Double {
-            return Variable(type: .real, isConstant: true, value: lhsReal + rhsReal)
+        } else if lhsVariable.type == .real {
+            return Variable(type: .real,
+                            isConstant: true,
+                            value: (lhsValue as! Double) + (rhsValue as! Double))
             
-        }  else if let lhsString = lhsVariable.value as? String,
-            let rhsString = rhsVariable.value as? String {
-            return Variable(type: .string, isConstant: true, value: lhsString + rhsString)
-            
+        }  else if lhsVariable.type == .string {
+            return Variable(type: .string,
+                            isConstant: true,
+                            value: (lhsValue as! String) + (rhsValue as! String))
         } else {
             throw InterpreterError.expressionEvaluationError
         }
@@ -195,14 +215,28 @@ struct BinaryOperatorExpr: Evaluable {
             let rhsVariable = try rhs.evaluate(context: context, global: global) as? Variable else {
                 throw InterpreterError.expressionEvaluationError
         }
-
-        if let lhsInteger = lhsVariable.value as? Int,
-            let rhsInteger = rhsVariable.value as? Int {
-            return Variable(type: .integer, isConstant: true, value: lhsInteger - rhsInteger)
+        
+        guard lhsVariable.type == rhsVariable.type else {
+            throw InterpreterError.binaryOperatorTypeMismatch
+        }
+        
+        guard let lhsValue = lhsVariable.value else {
+            throw InterpreterError.undefinedVariable
+        }
+        
+        guard let rhsValue = rhsVariable.value else {
+            throw InterpreterError.undefinedVariable
+        }
+        
+        if lhsVariable.type == .integer {
+            return Variable(type: .integer,
+                            isConstant: true,
+                            value: (lhsValue as! Int) - (rhsValue as! Int))
             
-        } else if let lhsReal = lhsVariable.value as? Double,
-            let rhsReal = rhsVariable.value as? Double {
-            return Variable(type: .real, isConstant: true, value: lhsReal - rhsReal)
+        } else if lhsVariable.type == .real {
+            return Variable(type: .real,
+                            isConstant: true,
+                            value: (lhsValue as! Double) - (rhsValue as! Double))
             
         } else {
             throw InterpreterError.expressionEvaluationError
@@ -215,13 +249,27 @@ struct BinaryOperatorExpr: Evaluable {
                 throw InterpreterError.expressionEvaluationError
         }
 
-        if let lhsInteger = lhsVariable.value as? Int,
-            let integerRhs = rhsVariable.value as? Int {
-            return Variable(type: .integer, isConstant: true, value: lhsInteger * integerRhs)
+        guard lhsVariable.type == rhsVariable.type else {
+            throw InterpreterError.binaryOperatorTypeMismatch
+        }
+        
+        guard let lhsValue = lhsVariable.value else {
+            throw InterpreterError.undefinedVariable
+        }
+        
+        guard let rhsValue = rhsVariable.value else {
+            throw InterpreterError.undefinedVariable
+        }
+        
+        if lhsVariable.type == .integer {
+            return Variable(type: .integer,
+                            isConstant: true,
+                            value: (lhsValue as! Int) * (rhsValue as! Int))
             
-        } else if let lhsReal = lhsVariable.value as? Double,
-            let rhsReal = rhsVariable.value as? Double {
-            return Variable(type: .real, isConstant: true, value: lhsReal * rhsReal)
+        } else if lhsVariable.type == .real {
+            return Variable(type: .real,
+                            isConstant: true,
+                            value: (lhsValue as! Double) * (rhsValue as! Double))
             
         } else {
             throw InterpreterError.expressionEvaluationError
@@ -234,21 +282,35 @@ struct BinaryOperatorExpr: Evaluable {
                 throw InterpreterError.expressionEvaluationError
         }
 
-        if let lhsInteger = lhsVariable.value as? Int,
-            let rhsInteger = rhsVariable.value as? Int {
+        guard lhsVariable.type == rhsVariable.type else {
+            throw InterpreterError.binaryOperatorTypeMismatch
+        }
+        
+        guard let lhsValue = lhsVariable.value else {
+            throw InterpreterError.undefinedVariable
+        }
+        
+        guard let rhsValue = rhsVariable.value else {
+            throw InterpreterError.undefinedVariable
+        }
+        
+        if lhsVariable.type == .integer {
+            let rhsInteger = rhsValue as! Int
             if rhsInteger == 0 {
                 throw InterpreterError.zeroDivisionAttempt
             }
+            return Variable(type: .integer,
+                            isConstant: true,
+                            value: (lhsValue as! Int) / rhsInteger)
             
-            return Variable(type: .integer, isConstant: true, value: lhsInteger/rhsInteger)
-            
-        } else if let lhsReal = lhsVariable.value as? Double,
-            let rhsReal = rhsVariable.value as? Double {
+        } else if lhsVariable.type == .real {
+            let rhsReal = rhsValue as! Double
             if rhsReal == 0 {
                 throw InterpreterError.zeroDivisionAttempt
             }
-            
-            return Variable(type: .real, isConstant: true, value: lhsReal/rhsReal)
+            return Variable(type: .real,
+                            isConstant: true,
+                            value: (lhsValue as! Double) / rhsReal)
             
         } else {
             throw InterpreterError.expressionEvaluationError
@@ -261,9 +323,22 @@ struct BinaryOperatorExpr: Evaluable {
                 throw InterpreterError.expressionEvaluationError
         }
 
-        if let lhsInteger = lhsVariable.value as? Int,
-            let rhsInteger = rhsVariable.value as? Int {
-            return Variable(type: .integer, isConstant: true, value: lhsInteger % rhsInteger)
+        guard lhsVariable.type == rhsVariable.type else {
+            throw InterpreterError.binaryOperatorTypeMismatch
+        }
+        
+        guard let lhsValue = lhsVariable.value else {
+            throw InterpreterError.undefinedVariable
+        }
+        
+        guard let rhsValue = rhsVariable.value else {
+            throw InterpreterError.undefinedVariable
+        }
+        
+        if lhsVariable.type == .integer {
+            return Variable(type: .integer,
+                            isConstant: true,
+                            value: (lhsValue as! Int) % (rhsValue as! Int))
             
         } else {
             throw InterpreterError.expressionEvaluationError
@@ -280,17 +355,14 @@ struct BinaryOperatorExpr: Evaluable {
             throw InterpreterError.forbiddenAssignment
         }
 
-        if lhsVariable.type != rhsVariable.type {
-            throw InterpreterError.binaryOperatorTypeMismatch
-        }
-        // Check if types match
+        // Check for type matching
         if lhsVariable.type != .any {     // `Any` welcome any type
             if lhsVariable.type != rhsVariable.type {
                 if let instance = rhsVariable.value as? Instance {
                     if !instance.isInstance(of: lhsVariable.type) {
                         throw InterpreterError.expressionTypeMismatch
                     }
-                } else {
+                } else if rhsVariable.type != .nil {
                     throw InterpreterError.expressionTypeMismatch
                 }
             }
@@ -307,18 +379,34 @@ struct BinaryOperatorExpr: Evaluable {
                 throw InterpreterError.expressionEvaluationError
         }
 
-        if let lhsInteger = lhsVariable.value as? Int,
-            let rhsInteger = rhsVariable.value as? Int {
-            return Variable(type: .boolean, isConstant: true, value: lhsInteger == rhsInteger)
+        if lhsVariable.type != rhsVariable.type {
+            if lhsVariable.type == .nil {
+                return Variable(type: .boolean, isConstant: true, value: rhsVariable.value == nil)
+            }
             
-        } else if let lhsReal = lhsVariable.value as? Double,
-            let rhsReal = rhsVariable.value as? Double {
-            return Variable(type: .boolean, isConstant: true, value: lhsReal == rhsReal)
+            if rhsVariable.type == .nil {
+                return Variable(type: .boolean, isConstant: true, value: lhsVariable.value == nil)
+            }
+
+            throw InterpreterError.expressionTypeMismatch
+        }
+        
+        if lhsVariable.type == .integer {
+            let value = (lhsVariable.value as! Int?) == (rhsVariable.value as! Int?)
+            return Variable(type: .boolean, isConstant: true, value: value)
             
-        } else if let lhsString = lhsVariable.value as? String,
-            let rhsString = rhsVariable.value as? String {
-            return Variable(type: .boolean, isConstant: true, value: lhsString ==  rhsString)
+        } else if lhsVariable.type == .real {
+            let value = (lhsVariable.value as! Double?) == (rhsVariable.value as! Double?)
+            return Variable(type: .boolean, isConstant: true, value: value)
             
+        } else if lhsVariable.type == .boolean {
+            let value = (lhsVariable.value as! Bool?) == (rhsVariable.value as! Bool?)
+            return Variable(type: .boolean, isConstant: true, value: value)
+
+        } else if lhsVariable.type == .string {
+            let value = (lhsVariable.value as! String?) == (rhsVariable.value as! String?)
+            return Variable(type: .boolean, isConstant: true, value: value)
+
         } else {
             throw InterpreterError.expressionEvaluationError
         }
@@ -329,18 +417,34 @@ struct BinaryOperatorExpr: Evaluable {
             let rhsVariable = try rhs.evaluate(context: context, global: global) as? Variable else {
                 throw InterpreterError.expressionEvaluationError
         }
-
-        if let lhsInteger = lhsVariable.value as? Int,
-            let rhsInteger = rhsVariable.value as? Int {
-            return Variable(type: .boolean, isConstant: true, value: lhsInteger != rhsInteger)
+        
+        if lhsVariable.type != rhsVariable.type {
+            if lhsVariable.type == .nil {
+                return Variable(type: .boolean, isConstant: true, value: rhsVariable.value != nil)
+            }
             
-        } else if let lhsReal = lhsVariable.value as? Double,
-            let rhsReal = rhsVariable.value as? Double {
-            return Variable(type: .boolean, isConstant: true, value: lhsReal != rhsReal)
+            if rhsVariable.type == .nil {
+                return Variable(type: .boolean, isConstant: true, value: lhsVariable.value != nil)
+            }
             
-        } else if let lhsString = lhsVariable.value as? String,
-            let rhsString = rhsVariable.value as? String {
-            return Variable(type: .boolean, isConstant: true, value: lhsString != rhsString)
+            throw InterpreterError.expressionTypeMismatch
+        }
+        
+        if lhsVariable.type == .integer {
+            let value = (lhsVariable.value as! Int?) != (rhsVariable.value as! Int?)
+            return Variable(type: .boolean, isConstant: true, value: value)
+            
+        } else if lhsVariable.type == .real {
+            let value = (lhsVariable.value as! Double?) != (rhsVariable.value as! Double?)
+            return Variable(type: .boolean, isConstant: true, value: value)
+            
+        } else if lhsVariable.type == .boolean {
+            let value = (lhsVariable.value as! Bool?) != (rhsVariable.value as! Bool?)
+            return Variable(type: .boolean, isConstant: true, value: value)
+            
+        } else if lhsVariable.type == .string {
+            let value = (lhsVariable.value as! String?) != (rhsVariable.value as! String?)
+            return Variable(type: .boolean, isConstant: true, value: value)
             
         } else {
             throw InterpreterError.expressionEvaluationError
@@ -353,17 +457,29 @@ struct BinaryOperatorExpr: Evaluable {
                 throw InterpreterError.expressionEvaluationError
         }
 
-        if let lhsInteger = lhsVariable.value as? Int,
-            let rhsInteger = rhsVariable.value as? Int {
-            return Variable(type: .boolean, isConstant: true, value: lhsInteger < rhsInteger)
+        guard lhsVariable.type == rhsVariable.type else {
+            throw InterpreterError.binaryOperatorTypeMismatch
+        }
+        
+        guard let lhsValue = lhsVariable.value else {
+            throw InterpreterError.undefinedVariable
+        }
+        
+        guard let rhsValue = rhsVariable.value else {
+            throw InterpreterError.undefinedVariable
+        }
+        
+        if lhsVariable.type == .integer {
+            let value = (lhsValue as! Int) < (rhsValue as! Int)
+            return Variable(type: .boolean, isConstant: true, value: value)
             
-        } else if let lhsReal = lhsVariable.value as? Double,
-            let rhsReal = rhsVariable.value as? Double {
-            return Variable(type: .boolean, isConstant: true, value: lhsReal < rhsReal)
+        } else if lhsVariable.type == .real {
+            let value = (lhsValue as! Double) < (rhsValue as! Double)
+            return Variable(type: .boolean, isConstant: true, value: value)
             
-        } else if let lhsString = lhsVariable.value as? String,
-            let rhsString = rhsVariable.value as? String {
-            return Variable(type: .boolean, isConstant: true, value: lhsString < rhsString)
+        } else if lhsVariable.type == .string {
+            let value = (lhsValue as! String) < (rhsValue as! String)
+            return Variable(type: .boolean, isConstant: true, value: value)
             
         } else {
             throw InterpreterError.expressionEvaluationError
@@ -376,17 +492,29 @@ struct BinaryOperatorExpr: Evaluable {
                 throw InterpreterError.expressionEvaluationError
         }
 
-        if let lhsInteger = lhsVariable.value as? Int,
-            let rhsInteger = rhsVariable.value as? Int {
-            return Variable(type: .boolean, isConstant: true, value: lhsInteger > rhsInteger)
+        guard lhsVariable.type == rhsVariable.type else {
+            throw InterpreterError.binaryOperatorTypeMismatch
+        }
+        
+        guard let lhsValue = lhsVariable.value else {
+            throw InterpreterError.undefinedVariable
+        }
+        
+        guard let rhsValue = rhsVariable.value else {
+            throw InterpreterError.undefinedVariable
+        }
+        
+        if lhsVariable.type == .integer {
+            let value = (lhsValue as! Int) > (rhsValue as! Int)
+            return Variable(type: .boolean, isConstant: true, value: value)
             
-        } else if let lhsReal = lhsVariable.value as? Double,
-            let rhsReal = rhsVariable.value as? Double {
-            return Variable(type: .boolean, isConstant: true, value: lhsReal > rhsReal)
+        } else if lhsVariable.type == .real {
+            let value = (lhsValue as! Double) > (rhsValue as! Double)
+            return Variable(type: .boolean, isConstant: true, value: value)
             
-        } else if let lhsString = lhsVariable.value as? String,
-            let rhsString = rhsVariable.value as? String {
-            return Variable(type: .boolean, isConstant: true, value: lhsString > rhsString)
+        } else if lhsVariable.type == .string {
+            let value = (lhsValue as! String) > (rhsValue as! String)
+            return Variable(type: .boolean, isConstant: true, value: value)
             
         } else {
             throw InterpreterError.expressionEvaluationError
@@ -399,17 +527,29 @@ struct BinaryOperatorExpr: Evaluable {
                 throw InterpreterError.expressionEvaluationError
         }
 
-        if let lhsInteger = lhsVariable.value as? Int,
-            let rhsInteger = rhsVariable.value as? Int {
-            return Variable(type: .boolean, isConstant: true, value: lhsInteger >= rhsInteger)
+        guard lhsVariable.type == rhsVariable.type else {
+            throw InterpreterError.binaryOperatorTypeMismatch
+        }
+        
+        guard let lhsValue = lhsVariable.value else {
+            throw InterpreterError.undefinedVariable
+        }
+        
+        guard let rhsValue = rhsVariable.value else {
+            throw InterpreterError.undefinedVariable
+        }
+        
+        if lhsVariable.type == .integer {
+            let value = (lhsValue as! Int) >= (rhsValue as! Int)
+            return Variable(type: .boolean, isConstant: true, value: value)
             
-        } else if let lhsReal = lhsVariable.value as? Double,
-            let rhsReal = rhsVariable.value as? Double {
-            return Variable(type: .boolean, isConstant: true, value: lhsReal >= rhsReal)
+        } else if lhsVariable.type == .real {
+            let value = (lhsValue as! Double) >= (rhsValue as! Double)
+            return Variable(type: .boolean, isConstant: true, value: value)
             
-        } else if let lhsString = lhsVariable.value as? String,
-            let rhsString = rhsVariable.value as? String {
-            return Variable(type: .boolean, isConstant: true, value: lhsString >= rhsString)
+        } else if lhsVariable.type == .string {
+            let value = (lhsValue as! String) >= (rhsValue as! String)
+            return Variable(type: .boolean, isConstant: true, value: value)
             
         } else {
             throw InterpreterError.expressionEvaluationError
@@ -422,17 +562,29 @@ struct BinaryOperatorExpr: Evaluable {
                 throw InterpreterError.expressionEvaluationError
         }
 
-        if let lhsInteger = lhsVariable.value as? Int,
-            let rhsInteger = rhsVariable.value as? Int {
-            return Variable(type: .boolean, isConstant: true, value: lhsInteger <= rhsInteger)
+        guard lhsVariable.type == rhsVariable.type else {
+            throw InterpreterError.binaryOperatorTypeMismatch
+        }
+        
+        guard let lhsValue = lhsVariable.value else {
+            throw InterpreterError.undefinedVariable
+        }
+        
+        guard let rhsValue = rhsVariable.value else {
+            throw InterpreterError.undefinedVariable
+        }
+        
+        if lhsVariable.type == .integer {
+            let value = (lhsValue as! Int) <= (rhsValue as! Int)
+            return Variable(type: .boolean, isConstant: true, value: value)
             
-        } else if let lhsReal = lhsVariable.value as? Double,
-            let rhsReal = rhsVariable.value as? Double {
-            return Variable(type: .boolean, isConstant: true, value: lhsReal <= rhsReal)
+        } else if lhsVariable.type == .real {
+            let value = (lhsValue as! Double) <= (rhsValue as! Double)
+            return Variable(type: .boolean, isConstant: true, value: value)
             
-        } else if let lhsString = lhsVariable.value as? String,
-            let rhsString = rhsVariable.value as? String {
-            return Variable(type: .boolean, isConstant: true, value: lhsString <= rhsString)
+        } else if lhsVariable.type == .string {
+            let value = (lhsValue as! String) <= (rhsValue as! String)
+            return Variable(type: .boolean, isConstant: true, value: value)
             
         } else {
             throw InterpreterError.expressionEvaluationError
@@ -444,10 +596,22 @@ struct BinaryOperatorExpr: Evaluable {
             let rhsVariable = try rhs.evaluate(context: context, global: global) as? Variable else {
                 throw InterpreterError.expressionEvaluationError
         }
+        
+        guard lhsVariable.type == rhsVariable.type else {
+            throw InterpreterError.binaryOperatorTypeMismatch
+        }
+        
+        guard let lhsValue = lhsVariable.value else {
+            throw InterpreterError.undefinedVariable
+        }
+        
+        guard let rhsValue = rhsVariable.value else {
+            throw InterpreterError.undefinedVariable
+        }
 
-        if let lhsBoolean = lhsVariable.value as? Bool,
-            let rhsBoolean = rhsVariable.value as? Bool {
-            return Variable(type: .boolean, isConstant: true, value: lhsBoolean && rhsBoolean)
+        if lhsVariable.type == .boolean {
+            let value = (lhsValue as! Bool) && (rhsValue as! Bool)
+            return Variable(type: .boolean, isConstant: true, value: value)
             
         } else {
             throw InterpreterError.expressionEvaluationError
@@ -460,9 +624,21 @@ struct BinaryOperatorExpr: Evaluable {
                 throw InterpreterError.expressionEvaluationError
         }
 
-        if let lhsBoolean = lhsVariable.value as? Bool,
-            let rhsBoolean = rhsVariable.value as? Bool {
-            return Variable(type: .boolean, isConstant: true, value: lhsBoolean || rhsBoolean)
+        guard lhsVariable.type == rhsVariable.type else {
+            throw InterpreterError.binaryOperatorTypeMismatch
+        }
+        
+        guard let lhsValue = lhsVariable.value else {
+            throw InterpreterError.undefinedVariable
+        }
+        
+        guard let rhsValue = rhsVariable.value else {
+            throw InterpreterError.undefinedVariable
+        }
+        
+        if lhsVariable.type == .boolean {
+            let value = (lhsValue as! Bool) || (rhsValue as! Bool)
+            return Variable(type: .boolean, isConstant: true, value: value)
             
         } else {
             throw InterpreterError.expressionEvaluationError
