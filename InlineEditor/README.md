@@ -4,6 +4,7 @@
 
 ## Online Editor Roadmap
 * Write tests
+* Editor syntaxe highlighting
 * Create a server only repo for deployment
 * Deploy to Heroku (env staging/prod)
 * Handle Errors
