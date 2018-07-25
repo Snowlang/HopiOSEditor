@@ -43,10 +43,10 @@ class Parser {
     private func getNextToken() throws {
         currentToken = try lexer.getNextToken()
         if let currentToken = currentToken {
-//            print("------------------------------------")
-//            print("--> currentToken = \(currentToken)")
+            print("------------------------------------")
+            print("--> currentToken = \(currentToken)")
             let currentPosition = lexer.getCurrentPosition()
-//            print("--> charIndex: \(currentPosition)")
+            print("--> charIndex: \(currentPosition)")
         } else {
             print("--> currentToken is empty")
         }
@@ -973,9 +973,6 @@ class Parser {
         case .superToken:
             return try parseSuperExpression()
             
-        case .nilToken:
-            return try parseNilExpression()
-            
         default:
             return nil
         }
@@ -1164,14 +1161,6 @@ class Parser {
         try getNextToken() // consume 'super'
         
         return SuperExpr()
-    }
-    
-    /**
-    */
-    private func parseNilExpression() throws -> Evaluable {
-        try getNextToken() // consume 'nil'
-        
-        return NilExpr()
     }
     
     /// unary

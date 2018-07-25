@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Hop
 
 struct SyntaxHighlighter {
 

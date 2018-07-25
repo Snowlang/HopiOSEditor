@@ -39,9 +39,8 @@ class Closure: Evaluable {
             let arguments = arguments {
             for (index, prototypeArgument) in prototypeArguments.enumerated() {
                 
-                var variable: Variable! = try arguments[index].expr.evaluate(context: context,
-                                                                             global: global) as? Variable
-                guard variable != nil else {
+                guard let variable = try arguments[index].expr.evaluate(context: context,
+                                                                        global: global) as? Variable else {
                     throw InterpreterError.expressionEvaluationError
                 }
                 
@@ -52,10 +51,6 @@ class Closure: Evaluable {
                             if !instance.isInstance(of: prototypeArgument.type) {
                                 throw InterpreterError.expressionTypeMismatch
                             }
-                        } else if variable.type == .nil {
-                            variable = Variable(type: prototypeArgument.type,
-                                                isConstant: true,
-                                                value: nil)
                         } else {
                             throw InterpreterError.expressionTypeMismatch
                         }
@@ -91,10 +86,6 @@ class Closure: Evaluable {
                         if !instance.isInstance(of: prototype.type) {
                             throw InterpreterError.wrongFunctionCallReturnedType
                         }
-                    } else if returnedVariable.type == .nil {
-                        returnedEvaluable = Variable(type: prototype.type,
-                                                     isConstant: true,
-                                                     value: nil)
                     } else {
                         throw InterpreterError.wrongFunctionCallReturnedType
                     }

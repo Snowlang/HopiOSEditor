@@ -8,7 +8,7 @@
 
 import Foundation
 
-enum Token: String {
+public enum Token: String {
     case hash                   = "#"
     case colon                  = ":"
     case comma                  = ","
@@ -57,24 +57,23 @@ enum Token: String {
     case classToken             = "class"
     case staticToken            = "static"
     case superToken             = "super"
-    case nilToken               = "nil"
     case lf                     // Line feed \n
     case eof                    // End of file
     
-    static let binaryOperatorTokens: Set<Token> = [
+    public static let binaryOperatorTokens: Set<Token> = [
         .plus, .minus, .multiplication, .divide, .remainder, .assignment, .equal,
         .notEqual, .lessThan, .greaterThan, .greaterThanOrEqualTo, .lessThanOrEqualTo,
         .logicalAND, .logicalOR
     ]
     
-    static let unaryOperatorTokens: Set<Token> = [
+    public static let unaryOperatorTokens: Set<Token> = [
         .onesComplement, .logicalNegation, .plus, .minus
     ]
     
-    static let reservedKeywords: Set<Token> = [
+    public static let reservedKeywords: Set<Token> = [
         .importToken, .ifToken, .elseToken, .forToken, .inToken, .to,
         .step, .whileToken, .breakToken, .continueToken, .funcToken, .returnToken,
-        .variable, constant, classToken, .staticToken, .superToken, .nilToken
+        .variable, constant, classToken, .staticToken, .superToken
     ]
     
 }

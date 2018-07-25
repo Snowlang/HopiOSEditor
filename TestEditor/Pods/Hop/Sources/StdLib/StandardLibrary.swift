@@ -13,10 +13,10 @@ import Foundation
 //
 
 // Notifications
-let printNotification = Notification.Name("com.language.printNotification")
+public let printNotification = Notification.Name(rawValue: "com.language.printNotification")
 
 // Notification infos keys
-let notificationMessageInfosKey = "notificationMessageInfosKey"
+public let notificationMessageInfosKey = "notificationMessageInfosKey"
 
 //
 // Standard modules definition

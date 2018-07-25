@@ -89,7 +89,6 @@ extension Type {
     static let boolean  = Type(name: "Bool")
     static let string   = Type(name: "String")
     static let any      = Type(name: "Any")
-    static let `nil`    = Type(name: "Nil") // Private type
     
     static let basicTypes: [Type] = [
         .void, .integer, .real, .boolean, .string, .any

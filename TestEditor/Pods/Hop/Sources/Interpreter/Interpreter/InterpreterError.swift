@@ -1,8 +1,8 @@
 //
-//  Interpreter.swift
-//  TestLexer
+//  InterpreterError.swift
+//  Hop
 //
-//  Created by poisson florent on 01/06/2018.
+//  Created by poisson florent on 24/07/2018.
 //  Copyright © 2018 poisson florent. All rights reserved.
 //
 
@@ -13,8 +13,8 @@ enum InterpreterError: Error {
     case unresolvedIdentifier
     case forbiddenAssignment
     case forbiddenFunctionCall
-    case undeclaredVariable
-    case undefinedVariable
+    case variableNotDeclared
+    case variableNotInitialized
     case classAlreadyDeclared
     case functionAlreadyDeclared
     case functionNotDeclared
@@ -46,18 +46,4 @@ enum InterpreterError: Error {
     case classMemberAlreadyDeclaredInSuperclass
     case classMemberAlreadyDeclared
     case classMemberNotDeclared
-}
-
-class Interpreter {
-
-    private let program: Program
-    
-    init(program: Program) {
-        self.program = program
-    }
-    
-    func execute() throws {
-        try program.perform()
-    }
-    
 }

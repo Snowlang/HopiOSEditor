@@ -9,15 +9,15 @@
 import Foundation
 
 
-enum LexerError: Error {
+public enum LexerError: Error {
     case unknownError
     case illegalContent(position: Int)
 }
 
-class Lexer {
+public class Lexer {
     
     private var chars: [Character]!
-    private(set) var nextCharIndex: Int = 0
+    public private(set) var nextCharIndex: Int = 0
     private var lineIndex: Int = 0
     private var currentChar: Character! {
         if nextCharIndex < chars.count {
@@ -25,33 +25,33 @@ class Lexer {
         }
         return nil
     }
-    var currentTokenValue: Any?
+    public var currentTokenValue: Any?
     
-    init(script: String) {
+    public init(script: String) {
         chars = Array(script)
     }
     
-    init?(with url: URL) {
+    public init?(with url: URL) {
         let program = self.loadProgram(from: url)
         if program == nil { return nil }
         chars = Array(program!)
     }
     
-    func getCurrentPosition() -> Int {
+    public func getCurrentPosition() -> Int {
         return nextCharIndex
     }
     
-    func getNextChar() {
+    public func getNextChar() {
         nextCharIndex += 1
     }
     
-    func getChar(at index: Int) -> Character? {
+    public func getChar(at index: Int) -> Character? {
         if index < 0 { return nil }
         if index > chars.count - 1 { return nil }
         return chars[index]
     }
     
-    func getNextToken() throws -> Token {
+    public func getNextToken() throws -> Token {
         if currentTokenValue != nil {
             currentTokenValue = nil
         }

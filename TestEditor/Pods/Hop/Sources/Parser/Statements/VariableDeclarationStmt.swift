@@ -67,34 +67,30 @@ class VariableDeclarationStmt: Evaluable {
         }
         
         // Get value expression if needed
-        var variable: Variable!
+        var variable: Variable?
         if let expr = expr {
-            let evaluatedVariable = try expr.evaluate(context: context, global: global) as? Variable
-            if evaluatedVariable == nil {
+            variable = try expr.evaluate(context: context, global: global) as? Variable
+            if variable == nil {
                 throw InterpreterError.expressionEvaluationError
             }
-
-            variable = Variable(type: evaluatedVariable!.type,
-                                isConstant: isConstant,
-                                value: evaluatedVariable!.value)
-
             if let type = type {
                 // Check if types match
                 if type != .any {     // `Any` welcome any type
-                    if type != evaluatedVariable!.type {
-                        if let instance = evaluatedVariable!.value as? Instance {
+                    if type != variable!.type {
+                        if let instance = variable!.value as? Instance {
                             if !instance.isInstance(of: type) {
                                 throw InterpreterError.expressionTypeMismatch
                             }
-                        } else if evaluatedVariable!.type != .nil {
+                            variable?.type = type  // Set superclass type
+                        } else {
                             throw InterpreterError.expressionTypeMismatch
                         }
-                        variable.type = type
                     }
                 }
-            } else if evaluatedVariable!.type == .nil {
-                throw InterpreterError.undefinedType
             }
+
+            variable?.isConstant = isConstant
+            
         } else if let type = type {
             variable = Variable(type: type, isConstant: isConstant, value: nil)
             

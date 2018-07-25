@@ -1,0 +1,6 @@
+framework module Hop {
+  umbrella header "Hop-umbrella.h"
+
+  export *
+  module * { export * }
+}

@@ -144,11 +144,13 @@ strip_invalid_archs() {
 
 if [[ "$CONFIGURATION" == "Debug" ]]; then
   install_framework "${BUILT_PRODUCTS_DIR}/DynamicColor/DynamicColor.framework"
+  install_framework "${BUILT_PRODUCTS_DIR}/Hop/Hop.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/MarkdownView/MarkdownView.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/SwiftyAttributes/SwiftyAttributes.framework"
 fi
 if [[ "$CONFIGURATION" == "Release" ]]; then
   install_framework "${BUILT_PRODUCTS_DIR}/DynamicColor/DynamicColor.framework"
+  install_framework "${BUILT_PRODUCTS_DIR}/Hop/Hop.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/MarkdownView/MarkdownView.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/SwiftyAttributes/SwiftyAttributes.framework"
 fi

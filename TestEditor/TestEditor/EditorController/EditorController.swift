@@ -8,6 +8,7 @@
 
 import UIKit
 import SwiftyAttributes
+import Hop
 
 class EditorController: UIViewController {
 
@@ -200,15 +201,9 @@ class EditorController: UIViewController {
         logTextView.text = nil
         view.endEditing(true)
 
-        let lexer = Lexer(script: script)
-        let parser = Parser(with: lexer)
         do {
-            if let program = try parser.parseProgram() {
-                displayLog(message: "------------- parsing OK -----------\n")
-                try program.perform()
-                displayLog(message: "\n------------- perform OK -----------")
-            }
-            
+            try Interpreter.runScript(script)
+
         } catch let error {
             displayLog(message: "Error: \(error)")
         }
