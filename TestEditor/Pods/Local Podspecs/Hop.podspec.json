@@ -1,6 +1,6 @@
 {
   "name": "Hop",
-  "version": "0.0.1",
+  "version": "0.1.2",
   "summary": "Hop: a typed script language",
   "description": "Hop: a typed script language",
   "homepage": "https://github.com/OMTS/Hop",
@@ -18,7 +18,7 @@
   },
   "source": {
     "git": "https://github.com/OMTS/Hop.git",
-    "tag": "0.0.1"
+    "tag": "0.1.2"
   },
   "source_files": "Sources/**/*.swift"
 }

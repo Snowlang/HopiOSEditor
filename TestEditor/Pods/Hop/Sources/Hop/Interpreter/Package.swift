@@ -28,7 +28,7 @@ import Foundation
  
  */
 
-class Package {
+class Package_ {
 
     
 }

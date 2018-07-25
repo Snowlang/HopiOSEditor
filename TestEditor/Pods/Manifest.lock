@@ -1,12 +1,12 @@
 PODS:
   - DynamicColor (4.0.2)
-  - Hop (0.0.1)
+  - Hop (0.1.2)
   - MarkdownView (1.3.0)
   - SwiftyAttributes (4.3.0)
 
 DEPENDENCIES:
   - DynamicColor
-  - Hop (from `https://github.com/OMTS/Hop.git`)
+  - Hop (from `https://github.com/OMTS/Hop.git`, branch `develop`)
   - MarkdownView
   - SwiftyAttributes
 
@@ -18,19 +18,20 @@ SPEC REPOS:
 
 EXTERNAL SOURCES:
   Hop:
+    :branch: develop
     :git: https://github.com/OMTS/Hop.git
 
 CHECKOUT OPTIONS:
   Hop:
-    :commit: cd7b7ab693736250afdb5e2c6b9e98e802c2d6c1
+    :commit: 91af10d300d0a03e1128a0f0ba70d30e8526f644
     :git: https://github.com/OMTS/Hop.git
 
 SPEC CHECKSUMS:
   DynamicColor: c7adcfe871781a2b39877a5774e452ba51b79eb3
-  Hop: eb3ad587a97fce83c50080b80f40a4b57c1ed2ef
+  Hop: f8012146e302e71b12437591b6eda78f7a00b41d
   MarkdownView: 6cee6c558eed4a012005405066071ef16a042d17
   SwiftyAttributes: debe9898c1160b4fe14d1c69962d78aaca95fd88
 
-PODFILE CHECKSUM: a066ad8c6324527ddd501e87667308625041bf60
+PODFILE CHECKSUM: c0d1ee7f88ef20963325ea4e00aaf9d471236914
 
 COCOAPODS: 1.5.0
