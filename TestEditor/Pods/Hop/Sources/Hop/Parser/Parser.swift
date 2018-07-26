@@ -973,6 +973,9 @@ class Parser {
         case .superToken:
             return try parseSuperExpression()
             
+        case .nilToken:
+            return try parseNilExpression()
+            
         default:
             return nil
         }
@@ -1161,6 +1164,14 @@ class Parser {
         try getNextToken() // consume 'super'
         
         return SuperExpr()
+    }
+    
+    /**
+     */
+    private func parseNilExpression() throws -> Evaluable {
+        try getNextToken() // consume 'nil'
+        
+        return NilExpr()
     }
     
     /// unary

@@ -9,8 +9,8 @@ target 'TestEditor' do
   pod 'MarkdownView'
   pod 'SwiftyAttributes'
   pod 'DynamicColor'
-#  pod 'Hop', :git => 'https://github.com/OMTS/Hop.git', :branch => 'develop'
-  pod 'Hop', :git => 'https://github.com/OMTS/Hop.git', :branch => 'feature-environment-configuration'
+  pod 'Hop', :git => 'https://github.com/OMTS/Hop.git', :branch => 'develop'
+#  pod 'Hop', :git => 'https://github.com/OMTS/Hop.git', :branch => 'feature-environment-configuration'
 
   target 'TestEditorTests' do
     inherit! :search_paths

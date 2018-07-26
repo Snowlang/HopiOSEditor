@@ -33,21 +33,35 @@ struct UnaryOperatorExpr: Evaluable {
     }
     
     private func evaluateOnesComplement(context: Scope, global: Scope) throws -> Evaluable? {
-        guard let evaluatedVariable = try operand.evaluate(context: context, global: global) as? Variable,
-            let intergerValue = evaluatedVariable.value as? Int else {
+        guard let evaluatedVariable = try operand.evaluate(context: context, global: global) as? Variable else {
             throw InterpreterError.expressionEvaluationError
         }
         
-        return Variable(type: .integer, isConstant: true, value: ~intergerValue)
+        guard evaluatedVariable.type == .integer else {
+            throw InterpreterError.expressionEvaluationError
+        }
+        
+        guard let evaluatedValue = evaluatedVariable.value else {
+            throw InterpreterError.undefinedVariable
+        }
+        
+        return Variable(type: .integer, isConstant: true, value: ~(evaluatedValue as! Int))
     }
     
     private func evaluateLogicalNegation(context: Scope, global: Scope) throws -> Evaluable? {
-        guard let evaluatedVariable = try operand.evaluate(context: context, global: global) as? Variable,
-            let booleanValue = evaluatedVariable.value as? Bool else {
+        guard let evaluatedVariable = try operand.evaluate(context: context, global: global) as? Variable else {
+            throw InterpreterError.expressionEvaluationError
+        }
+
+        guard evaluatedVariable.type == .boolean else {
             throw InterpreterError.expressionEvaluationError
         }
         
-        return Variable(type: .boolean, isConstant: true, value: !booleanValue)
+        guard let evaluatedValue = evaluatedVariable.value else {
+            throw InterpreterError.undefinedVariable
+        }
+
+        return Variable(type: .boolean, isConstant: true, value: !(evaluatedValue as! Bool))
     }
     
     private func evaluatePlus(context: Scope, global: Scope) throws -> Evaluable? {
@@ -55,11 +69,24 @@ struct UnaryOperatorExpr: Evaluable {
             throw InterpreterError.expressionEvaluationError
         }
         
-        if let integerValue = evaluatedVariable.value as? Int {
-            return Variable(type: .boolean, isConstant: true, value: integerValue)
+        // NOTE: First, varibale type is checked,
+        //       then, variable value setting is checked.
+        
+        if evaluatedVariable.type == .integer {
+            guard let evaluatedValue = evaluatedVariable.value else {
+                throw InterpreterError.undefinedVariable
+            }
+            return Variable(type: .integer,
+                            isConstant: true,
+                            value: (evaluatedValue as! Int))
             
-        } else if let realValue = evaluatedVariable.value as? Double {
-            return Variable(type: .boolean, isConstant: true, value: realValue)
+        } else if evaluatedVariable.type == .real {
+            guard let evaluatedValue = evaluatedVariable.value else {
+                throw InterpreterError.undefinedVariable
+            }
+            return Variable(type: .real,
+                            isConstant: true,
+                            value: (evaluatedValue as! Double))
         } else {
             throw InterpreterError.expressionEvaluationError
         }
@@ -70,12 +97,24 @@ struct UnaryOperatorExpr: Evaluable {
             throw InterpreterError.expressionEvaluationError
         }
         
-        if let integerValue = evaluatedVariable.value as? Int {
-            return Variable(type: .integer, isConstant: true, value: -integerValue)
-            
-        } else if let realValue = evaluatedVariable.value as? Double {
-            return Variable(type: .real, isConstant: true, value: -realValue)
-            
+        // NOTE: First, varibale type is checked,
+        //       then, variable value setting is checked.
+        
+        if evaluatedVariable.type == .integer {
+            guard let evaluatedValue = evaluatedVariable.value else {
+                throw InterpreterError.undefinedVariable
+            }
+            return Variable(type: .integer,
+                            isConstant: true,
+                            value: -(evaluatedValue as! Int))
+
+        } else if evaluatedVariable.type == .real {
+            guard let evaluatedValue = evaluatedVariable.value else {
+                throw InterpreterError.undefinedVariable
+            }
+            return Variable(type: .real,
+                            isConstant: true,
+                            value: -(evaluatedValue as! Double))
         } else {
             throw InterpreterError.expressionEvaluationError
         }
