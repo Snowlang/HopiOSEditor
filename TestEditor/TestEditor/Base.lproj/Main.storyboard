@@ -873,7 +873,17 @@ welcome.displayGreatings(3)</string>
                     <view key="view" contentMode="scaleToFill" id="h2e-Fg-gL7">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="603"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="white" translatesAutoresizingMaskIntoConstraints="NO" id="yGY-4N-3UE">
+                                <rect key="frame" x="177" y="291.5" width="20" height="20"/>
+                                <color key="color" white="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            </activityIndicatorView>
+                        </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="yGY-4N-3UE" firstAttribute="centerX" secondItem="DOS-zw-SKA" secondAttribute="centerX" id="cQt-sS-65a"/>
+                            <constraint firstItem="yGY-4N-3UE" firstAttribute="centerY" secondItem="DOS-zw-SKA" secondAttribute="centerY" id="t2q-l7-wFH"/>
+                        </constraints>
                         <viewLayoutGuide key="safeArea" id="DOS-zw-SKA"/>
                     </view>
                     <navigationItem key="navigationItem" id="d0m-lA-81N">
@@ -883,6 +893,9 @@ welcome.displayGreatings(3)</string>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
+                    <connections>
+                        <outlet property="activityIndicator" destination="yGY-4N-3UE" id="YKm-ps-1Jd"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="VSX-82-BE0" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>

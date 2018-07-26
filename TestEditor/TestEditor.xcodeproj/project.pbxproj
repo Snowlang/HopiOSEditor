@@ -31,6 +31,7 @@
 		CB7F219B20F641B100999955 /* String+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB7F219A20F641B100999955 /* String+Extension.swift */; };
 		CB7F219D20F6585E00999955 /* FileManager+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB7F219C20F6585E00999955 /* FileManager+Extension.swift */; };
 		CB7F219F20F65A6400999955 /* PackageRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB7F219E20F65A6400999955 /* PackageRepository.swift */; };
+		CB8BE4A1210A0E5E00880C7E /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB8BE4A0210A0E5E00880C7E /* Constants.swift */; };
 		CBA1723920F3ADA900012AC5 /* PackagesController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBA1723820F3ADA900012AC5 /* PackagesController.swift */; };
 		CBB9947420EEAC5F007F307D /* Script.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBB9947320EEAC5F007F307D /* Script.swift */; };
 		CBCE3D3820ECC12B00B4ABC0 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBCE3D3720ECC12B00B4ABC0 /* Theme.swift */; };
@@ -93,6 +94,7 @@
 		CB7F219A20F641B100999955 /* String+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Extension.swift"; sourceTree = "<group>"; };
 		CB7F219C20F6585E00999955 /* FileManager+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FileManager+Extension.swift"; sourceTree = "<group>"; };
 		CB7F219E20F65A6400999955 /* PackageRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackageRepository.swift; sourceTree = "<group>"; };
+		CB8BE4A0210A0E5E00880C7E /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		CBA1723820F3ADA900012AC5 /* PackagesController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackagesController.swift; sourceTree = "<group>"; };
 		CBB9947320EEAC5F007F307D /* Script.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Script.swift; sourceTree = "<group>"; };
 		CBCE3D3720ECC12B00B4ABC0 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
@@ -276,6 +278,7 @@
 			isa = PBXGroup;
 			children = (
 				CB7AE2F020F8942200BB5F50 /* EditorErrors.swift */,
+				CB8BE4A0210A0E5E00880C7E /* Constants.swift */,
 			);
 			path = Commons;
 			sourceTree = "<group>";
@@ -583,6 +586,7 @@
 				CB0E759820FDD3A900959513 /* ModulesController.swift in Sources */,
 				CB7F219F20F65A6400999955 /* PackageRepository.swift in Sources */,
 				CBA1723920F3ADA900012AC5 /* PackagesController.swift in Sources */,
+				CB8BE4A1210A0E5E00880C7E /* Constants.swift in Sources */,
 				CB0904C72100CFC400E7D5C0 /* ModuleCreationFormController.swift in Sources */,
 				CB7F219D20F6585E00999955 /* FileManager+Extension.swift in Sources */,
 				CB7F219920F6332500999955 /* PackageCreationFormController.swift in Sources */,
@@ -776,7 +780,10 @@
 				DEVELOPMENT_TEAM = YLEKY4JP87;
 				INFOPLIST_FILE = TestEditor/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.2;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = oneMoreThingStudio.TestEditor;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;
@@ -793,7 +800,10 @@
 				DEVELOPMENT_TEAM = YLEKY4JP87;
 				INFOPLIST_FILE = TestEditor/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.2;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = oneMoreThingStudio.TestEditor;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;
@@ -810,7 +820,11 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = YLEKY4JP87;
 				INFOPLIST_FILE = TestEditorTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = oneMoreThingStudio.TestEditorTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;
@@ -828,7 +842,11 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = YLEKY4JP87;
 				INFOPLIST_FILE = TestEditorTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = oneMoreThingStudio.TestEditorTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;
@@ -845,7 +863,11 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = YLEKY4JP87;
 				INFOPLIST_FILE = TestEditorUITests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = oneMoreThingStudio.TestEditorUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;
@@ -862,7 +884,11 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = YLEKY4JP87;
 				INFOPLIST_FILE = TestEditorUITests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = oneMoreThingStudio.TestEditorUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;
