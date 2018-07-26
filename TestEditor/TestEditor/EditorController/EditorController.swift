@@ -42,8 +42,6 @@ class EditorController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        registerForNotifications()
-        
         startObservingKeyboard()
 
         // Display script
@@ -72,8 +70,6 @@ class EditorController: UIViewController {
         if !isImmutable {
             saveScript(silently: true)
         }
-        
-        unregisterForNotifications()
         
         stopObservingKeyboard()
     }
@@ -111,21 +107,6 @@ class EditorController: UIViewController {
             cursorLineView.rightAnchor.constraint(equalTo: cursorLineContainer.rightAnchor),
             cursorLineHeight
             ])
-    }
-    
-    private func registerForNotifications() {
-        NotificationCenter.default.addObserver(forName: printNotification,
-                                               object: nil,
-                                               queue: nil) {
-                                                [weak self] (notification) in
-                                                if let message = notification.userInfo?[notificationMessageInfosKey] as? String {
-                                                    self?.displayLog(message: message)
-                                                }
-        }
-    }
-    
-    private func unregisterForNotifications() {
-        NotificationCenter.default.removeObserver(self)
     }
     
     // MARK: - State management
@@ -201,8 +182,21 @@ class EditorController: UIViewController {
         logTextView.text = nil
         view.endEditing(true)
 
+        // Configure stdout callback
+        let messenger = Messenger(sessionId: nil)
+        messenger.subscribe(to: .stdout) { [weak self] (_, message) in
+            if let message = message.data as? String {
+                self?.displayLog(message: message)
+            }
+        }
+        let config = Interpreter.Configuration(messenger: messenger,
+                                               isDebug: nil)
+        
+        // Then create intepreter instance with configuration & run script
+        let interpreter = Interpreter(config: config)
+        
         do {
-            try Interpreter.runScript(script)
+            try interpreter.runScript(script)
 
         } catch let error {
             displayLog(message: "Error: \(error)")

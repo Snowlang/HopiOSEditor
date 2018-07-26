@@ -31,12 +31,6 @@ public class Lexer {
         chars = Array(script)
     }
     
-    public init?(with url: URL) {
-        let program = self.loadProgram(from: url)
-        if program == nil { return nil }
-        chars = Array(program!)
-    }
-    
     public func getCurrentPosition() -> Int {
         return nextCharIndex
     }
@@ -70,10 +64,10 @@ public class Lexer {
         }
         
         // Consume line feeds
-        while currentChar == "\n" {
-            getNextChar()   // Consume '\n'
+        while currentChar == "\n" || currentChar == "\r\n" {
+            getNextChar()   // Consume '\n' or \r\n
             lineIndex += 1
-            if currentChar != "\n" {
+            if currentChar != "\n" && currentChar != "\r\n" {
                 return Token.lf
             }
         }
@@ -87,7 +81,7 @@ public class Lexer {
                 if currentChar == "/" {
                     getNextChar()
                     // Consume // comment up to the end of line
-                    while currentChar != nil && currentChar != "\n" {
+                    while currentChar != nil && (currentChar != "\n" || currentChar == "\r\n") {
                         getNextChar()
                     }
                     return try getNextToken()
@@ -99,7 +93,7 @@ public class Lexer {
                             return Token.eof
                         }
                         
-                        if currentChar == "\n" {
+                        if currentChar == "\n" || currentChar == "\r\n" {
                             lineIndex += 1
                         }
                         

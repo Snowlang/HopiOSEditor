@@ -9,16 +9,6 @@
 import Foundation
 
 //
-// Notification management
-//
-
-// Notifications
-public let printNotification = Notification.Name(rawValue: "com.language.printNotification")
-
-// Notification infos keys
-public let notificationMessageInfosKey = "notificationMessageInfosKey"
-
-//
 // Standard modules definition
 //
 
@@ -132,10 +122,12 @@ private func getPrintDeclaration(declarationScope: Scope) -> Closure {
         }
         
         let message = "[\(Date().timeIntervalSinceReferenceDate)] -- \(string)"
+        
         print(message)
-        NotificationCenter.default.post(name: printNotification,
-                                        object: nil,
-                                        userInfo: [notificationMessageInfosKey : message])
+        
+        Messenger.post(message: Message(type: .stdout,
+                                        identifier: nil,
+                                        data: message))
         return nil
     }
 }
