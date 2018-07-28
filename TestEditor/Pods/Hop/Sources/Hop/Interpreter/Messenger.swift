@@ -22,30 +22,11 @@ public struct Message {
 
 public class Messenger {
     
-    public typealias MessageHandler = (_ sessionId: String?, _ message: Message) -> Void
+    public typealias MessageHandler = (_ message: Message) -> Void
     
-    var sessionId: String?
     var handlers = [MessageType: [MessageHandler]]()
-    
-    // Notifications declaration
-    static let messagePostingNotification = Notification.Name(rawValue: "com.Messenger.messagePostingNotification")
-    static let messageInfoKey = "com.Messenger.messageInfoKey"
-    
-    public init(sessionId: String?) {
-        self.sessionId = sessionId
-        
-        // Register for internal message posting notifications
-        NotificationCenter.default.addObserver(forName: Messenger.messagePostingNotification,
-                                               object: nil,
-                                               queue: nil) {
-                                                [weak self] (notification) in
-                                                self?.dispatchMessage(from: notification)
-        }
-    }
-    
-    deinit {
-        NotificationCenter.default.removeObserver(self)
-    }
+
+    public init() {}
     
     public func subscribe(to messageType: MessageType,
                           handler: @escaping MessageHandler) {
@@ -56,24 +37,13 @@ public class Messenger {
         
         handlers[messageType]?.append(handler)
     }
-    
-    private func dispatchMessage(from notification: Notification) {
-        if let message = notification.userInfo?[Messenger.messageInfoKey] as? Message,
-            let messageHandlers = handlers[message.type] {
+
+    func post(message: Message) {
+        if let messageHandlers = handlers[message.type] {
             for messageHandler in messageHandlers {
-                messageHandler(sessionId, message)
+                messageHandler(message)
             }
         }
-    }
-    
-    static func post(message: Message) {
-        let userInfo: [String: Any] = [
-            Messenger.messageInfoKey: message
-        ]
-        let notification = Notification(name: Messenger.messagePostingNotification,
-                                        object: nil,
-                                        userInfo: userInfo)
-        NotificationCenter.default.post(notification)
     }
     
 }

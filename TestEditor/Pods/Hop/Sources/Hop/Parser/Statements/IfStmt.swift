@@ -39,16 +39,19 @@ struct IfStmt: Evaluable {
         return description
     }
 
-    func evaluate(context: Scope, global: Scope) throws -> Evaluable? {
-        guard let conditionVariable = try conditionExpression.evaluate(context: context, global: global) as? Variable,
+    func evaluate(context: Scope, environment: Environment) throws -> Evaluable? {
+        guard let conditionVariable = try conditionExpression.evaluate(context: context,
+                                                                       environment: environment) as? Variable,
             let conditionValue = conditionVariable.value as? Bool else {
             throw InterpreterError.expressionEvaluationError
         }
         
         if conditionValue {
-            _ = try thenBlock?.evaluate(context: context, global: global)
+            _ = try thenBlock?.evaluate(context: context,
+                                        environment: environment)
         } else {
-            _ = try elseBlock?.evaluate(context: context, global: global)
+            _ = try elseBlock?.evaluate(context: context,
+                                        environment: environment)
         }
         
         return nil

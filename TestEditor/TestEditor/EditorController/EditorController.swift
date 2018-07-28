@@ -182,18 +182,21 @@ class EditorController: UIViewController {
         logTextView.text = nil
         view.endEditing(true)
 
-        // Configure stdout callback
-        let messenger = Messenger(sessionId: nil)
-        messenger.subscribe(to: .stdout) { [weak self] (_, message) in
+        // Setup stdout callback
+        let messenger = Messenger()
+        messenger.subscribe(to: .stdout) { [weak self] (message) in
             if let message = message.data as? String {
                 self?.displayLog(message: message)
             }
         }
-        let config = Interpreter.Configuration(messenger: messenger,
-                                               isDebug: nil)
         
-        // Then create intepreter instance with configuration & run script
-        let interpreter = Interpreter(config: config)
+        // Setupo runtime environment
+        let environment = Environment(isDebug: true,
+                                      messenger: messenger,
+                                      getScriptForModule: nil)
+        
+        // Then create & run intepreter
+        let interpreter = Interpreter(environment: environment)
         
         do {
             try interpreter.runScript(script)

@@ -14,9 +14,10 @@ protocol Evaluable: Loggable {
      
      - Parameter context: current scope,
      
-     - Parameter global: global scope for imported modules.
+     - Parameter environment: external & internal environment interface.
     
      */
-    func evaluate(context: Scope, global: Scope) throws -> Evaluable?
+    func evaluate(context: Scope,
+                  environment: Environment) throws -> Evaluable?
 
 }

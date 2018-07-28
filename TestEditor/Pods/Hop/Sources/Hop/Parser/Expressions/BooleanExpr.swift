@@ -20,7 +20,8 @@ class BooleanExpr: Evaluable {
         return "Boolean(\(value))"
     }
     
-    func evaluate(context: Scope, global: Scope) throws -> Evaluable? {
+    func evaluate(context: Scope,
+                  environment: Environment) throws -> Evaluable? {
         return Variable(type: .boolean, isConstant: true, value: value)
     }
     

@@ -72,7 +72,7 @@ func getNativeModule(name: String) -> Module? {
 
 func getNativeFunctionClosure(prototype: Prototype,
                               declarationScope: Scope,
-                              evaluation: @escaping (_ arguments: [Variable]?) throws -> Variable?) -> Closure {
+                              evaluation: @escaping (_ arguments: [Variable]?, _ environment: Environment) throws -> Variable?) -> Closure {
     // Function declaration
     // ====================
     
@@ -115,7 +115,7 @@ private func getPrintDeclaration(declarationScope: Scope) -> Closure {
     let prototype = Prototype(name: "print", arguments: [argument], type: .void)
 
     return getNativeFunctionClosure(prototype: prototype, declarationScope: declarationScope) {
-        (expressions) in
+        (expressions, environment) in
         
         guard let string = expressions?.first?.value as? String else {
             throw InterpreterError.nativeFunctionCallParameterError
@@ -125,9 +125,9 @@ private func getPrintDeclaration(declarationScope: Scope) -> Closure {
         
         print(message)
         
-        Messenger.post(message: Message(type: .stdout,
-                                        identifier: nil,
-                                        data: message))
+        environment.messenger?.post(message: Message(type: .stdout,
+                                                     identifier: nil,
+                                                     data: message))
         return nil
     }
 }
@@ -140,7 +140,7 @@ private func getStringDeclaration(declarationScope: Scope) -> Closure {
     let prototype = Prototype(name: "string", arguments: [argument], type: .string)
     
     return getNativeFunctionClosure(prototype: prototype, declarationScope: declarationScope) {
-        (expressions) in
+        (expressions, _) in
         
         guard let variable = expressions?.first else {
             throw InterpreterError.nativeFunctionCallParameterError
@@ -173,7 +173,7 @@ private func getAcosDeclaration(declarationScope: Scope) -> Closure {
     let prototype = Prototype(name: "acos", arguments: [argument], type: .real)
     
     return getNativeFunctionClosure(prototype: prototype, declarationScope: declarationScope) {
-        (expressions) in
+        (expressions, _) in
         
         guard let value = expressions?.first?.value as? Double else {
             throw InterpreterError.nativeFunctionCallParameterError
@@ -190,7 +190,7 @@ private func getAsinDeclaration(declarationScope: Scope) -> Closure {
     let prototype = Prototype(name: "asin", arguments: [argument], type: .real)
     
     return getNativeFunctionClosure(prototype: prototype, declarationScope: declarationScope) {
-        (expressions) in
+        (expressions, _) in
         
         guard let value = expressions?.first?.value as? Double else {
             throw InterpreterError.nativeFunctionCallParameterError
@@ -207,7 +207,7 @@ private func getAtanDeclaration(declarationScope: Scope) -> Closure {
     let prototype = Prototype(name: "atan", arguments: [argument], type: .real)
     
     return getNativeFunctionClosure(prototype: prototype, declarationScope: declarationScope) {
-        (expressions) in
+        (expressions, _) in
         
         guard let value = expressions?.first?.value as? Double else {
             throw InterpreterError.nativeFunctionCallParameterError
@@ -225,7 +225,7 @@ private func getAtan2Declaration(declarationScope: Scope) -> Closure {
     let prototype = Prototype(name: "atan2", arguments: [xArgument, yArgument], type: .real)
     
     return getNativeFunctionClosure(prototype: prototype, declarationScope: declarationScope) {
-        (expressions) in
+        (expressions, _) in
         
         guard let expressions = expressions,
             expressions.count == 2,
@@ -245,7 +245,7 @@ private func getCosDeclaration(declarationScope: Scope) -> Closure {
     let prototype = Prototype(name: "cos", arguments: [argument], type: .real)
     
     return getNativeFunctionClosure(prototype: prototype, declarationScope: declarationScope) {
-        (expressions) in
+        (expressions, _) in
         
         guard let value = expressions?.first?.value as? Double else {
             throw InterpreterError.nativeFunctionCallParameterError
@@ -262,7 +262,7 @@ private func getSinDeclaration(declarationScope: Scope) -> Closure {
     let prototype = Prototype(name: "sin", arguments: [argument], type: .real)
     
     return getNativeFunctionClosure(prototype: prototype, declarationScope: declarationScope) {
-        (expressions) in
+        (expressions, _) in
         
         guard let value = expressions?.first?.value as? Double else {
             throw InterpreterError.nativeFunctionCallParameterError
@@ -279,7 +279,7 @@ private func getTanDeclaration(declarationScope: Scope) -> Closure {
     let prototype = Prototype(name: "tan", arguments: [argument], type: .real)
     
     return getNativeFunctionClosure(prototype: prototype, declarationScope: declarationScope) {
-        (expressions) in
+        (expressions, _) in
         
         guard let value = expressions?.first?.value as? Double else {
             throw InterpreterError.nativeFunctionCallParameterError
@@ -296,7 +296,7 @@ private func getAcoshDeclaration(declarationScope: Scope) -> Closure {
     let prototype = Prototype(name: "acosh", arguments: [argument], type: .real)
     
     return getNativeFunctionClosure(prototype: prototype, declarationScope: declarationScope) {
-        (expressions) in
+        (expressions, _) in
         
         guard let value = expressions?.first?.value as? Double else {
             throw InterpreterError.nativeFunctionCallParameterError
@@ -313,7 +313,7 @@ private func getAsinhDeclaration(declarationScope: Scope) -> Closure {
     let prototype = Prototype(name: "asinh", arguments: [argument], type: .real)
     
     return getNativeFunctionClosure(prototype: prototype, declarationScope: declarationScope) {
-        (expressions) in
+        (expressions, _) in
         
         guard let value = expressions?.first?.value as? Double else {
             throw InterpreterError.nativeFunctionCallParameterError
@@ -330,7 +330,7 @@ private func getAtanhDeclaration(declarationScope: Scope) -> Closure {
     let prototype = Prototype(name: "atanh", arguments: [argument], type: .real)
     
     return getNativeFunctionClosure(prototype: prototype, declarationScope: declarationScope) {
-        (expressions) in
+        (expressions, _) in
         
         guard let value = expressions?.first?.value as? Double else {
             throw InterpreterError.nativeFunctionCallParameterError
@@ -347,7 +347,7 @@ private func getCoshDeclaration(declarationScope: Scope) -> Closure {
     let prototype = Prototype(name: "cosh", arguments: [argument], type: .real)
     
     return getNativeFunctionClosure(prototype: prototype, declarationScope: declarationScope) {
-        (expressions) in
+        (expressions, _) in
         
         guard let value = expressions?.first?.value as? Double else {
             throw InterpreterError.nativeFunctionCallParameterError
@@ -364,7 +364,7 @@ private func getSinhDeclaration(declarationScope: Scope) -> Closure {
     let prototype = Prototype(name: "sinh", arguments: [argument], type: .real)
     
     return getNativeFunctionClosure(prototype: prototype, declarationScope: declarationScope) {
-        (expressions) in
+        (expressions, _) in
         
         guard let value = expressions?.first?.value as? Double else {
             throw InterpreterError.nativeFunctionCallParameterError
@@ -381,7 +381,7 @@ private func getTanhDeclaration(declarationScope: Scope) -> Closure {
     let prototype = Prototype(name: "tanh", arguments: [argument], type: .real)
     
     return getNativeFunctionClosure(prototype: prototype, declarationScope: declarationScope) {
-        (expressions) in
+        (expressions, _) in
         
         guard let value = expressions?.first?.value as? Double else {
             throw InterpreterError.nativeFunctionCallParameterError
@@ -398,7 +398,7 @@ private func getExpDeclaration(declarationScope: Scope) -> Closure {
     let prototype = Prototype(name: "exp", arguments: [argument], type: .real)
     
     return getNativeFunctionClosure(prototype: prototype, declarationScope: declarationScope) {
-        (expressions) in
+        (expressions, _) in
         
         guard let value = expressions?.first?.value as? Double else {
             throw InterpreterError.nativeFunctionCallParameterError
@@ -415,7 +415,7 @@ private func getLogDeclaration(declarationScope: Scope) -> Closure {
     let prototype = Prototype(name: "log", arguments: [argument], type: .real)
     
     return getNativeFunctionClosure(prototype: prototype, declarationScope: declarationScope) {
-        (expressions) in
+        (expressions, _) in
         
         guard let value = expressions?.first?.value as? Double else {
             throw InterpreterError.nativeFunctionCallParameterError
@@ -432,7 +432,7 @@ private func getLog10Declaration(declarationScope: Scope) -> Closure {
     let prototype = Prototype(name: "log10", arguments: [argument], type: .real)
     
     return getNativeFunctionClosure(prototype: prototype, declarationScope: declarationScope) {
-        (expressions) in
+        (expressions, _) in
         
         guard let value = expressions?.first?.value as? Double else {
             throw InterpreterError.nativeFunctionCallParameterError
@@ -449,7 +449,7 @@ private func getFabsDeclaration(declarationScope: Scope) -> Closure {
     let prototype = Prototype(name: "fabs", arguments: [argument], type: .real)
     
     return getNativeFunctionClosure(prototype: prototype, declarationScope: declarationScope) {
-        (expressions) in
+        (expressions, _) in
         
         guard let value = expressions?.first?.value as? Double else {
             throw InterpreterError.nativeFunctionCallParameterError
@@ -467,7 +467,7 @@ private func getHypotDeclaration(declarationScope: Scope) -> Closure {
     let prototype = Prototype(name: "hypot", arguments: [xArgument, yArgument], type: .real)
     
     return getNativeFunctionClosure(prototype: prototype, declarationScope: declarationScope) {
-        (expressions) in
+        (expressions, _) in
         
         guard let expressions = expressions,
             expressions.count == 2,
@@ -489,7 +489,7 @@ private func getPowDeclaration(declarationScope: Scope) -> Closure {
     let prototype = Prototype(name: "pow", arguments: [xArgument, yArgument], type: .real)
     
     return getNativeFunctionClosure(prototype: prototype, declarationScope: declarationScope) {
-        (expressions) in
+        (expressions, _) in
         
         guard let expressions = expressions,
             expressions.count == 2,
@@ -510,7 +510,7 @@ private func getSqrtDeclaration(declarationScope: Scope) -> Closure {
     let prototype = Prototype(name: "sqrt", arguments: [argument], type: .real)
     
     return getNativeFunctionClosure(prototype: prototype, declarationScope: declarationScope) {
-        (expressions) in
+        (expressions, _) in
         
         guard let value = expressions?.first?.value as? Double else {
             throw InterpreterError.nativeFunctionCallParameterError
@@ -527,7 +527,7 @@ private func getCeilDeclaration(declarationScope: Scope) -> Closure {
     let prototype = Prototype(name: "ceil", arguments: [argument], type: .real)
     
     return getNativeFunctionClosure(prototype: prototype, declarationScope: declarationScope) {
-        (expressions) in
+        (expressions, _) in
         
         guard let value = expressions?.first?.value as? Double else {
             throw InterpreterError.nativeFunctionCallParameterError
@@ -544,7 +544,7 @@ private func getFloorDeclaration(declarationScope: Scope) -> Closure {
     let prototype = Prototype(name: "floor", arguments: [argument], type: .real)
     
     return getNativeFunctionClosure(prototype: prototype, declarationScope: declarationScope) {
-        (expressions) in
+        (expressions, _) in
         
         guard let value = expressions?.first?.value as? Double else {
             throw InterpreterError.nativeFunctionCallParameterError
@@ -561,7 +561,7 @@ private func getRoundDeclaration(declarationScope: Scope) -> Closure {
     let prototype = Prototype(name: "round", arguments: [argument], type: .real)
     
     return getNativeFunctionClosure(prototype: prototype, declarationScope: declarationScope) {
-        (expressions) in
+        (expressions, _) in
         
         guard let value = expressions?.first?.value as? Double else {
             throw InterpreterError.nativeFunctionCallParameterError

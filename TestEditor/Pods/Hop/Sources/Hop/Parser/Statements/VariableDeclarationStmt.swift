@@ -43,7 +43,7 @@ class VariableDeclarationStmt: Evaluable {
         return description
     }
     
-    func evaluate(context: Scope, global: Scope) throws -> Evaluable? {
+    func evaluate(context: Scope, environment: Environment) throws -> Evaluable? {
         // Check for identifier redeclaration
         guard context.symbolTable[hashId] == nil else {
             throw InterpreterError.invalidRedeclaration
@@ -56,7 +56,8 @@ class VariableDeclarationStmt: Evaluable {
                 Type.basicTypeHashIds.contains(identifierType.hashId) {
                 type = Type(name: identifierType.name)
                 
-            } else if let evaluatedType = try typeExpr.evaluate(context: context, global: global),
+            } else if let evaluatedType = try typeExpr.evaluate(context: context,
+                                                                environment: environment),
                 let `class` = evaluatedType as? Class {
                 type = `class`.type
             }
@@ -69,7 +70,8 @@ class VariableDeclarationStmt: Evaluable {
         // Get value expression if needed
         var variable: Variable!
         if let expr = expr {
-            let evaluatedVariable = try expr.evaluate(context: context, global: global) as? Variable
+            let evaluatedVariable = try expr.evaluate(context: context,
+                                                      environment: environment) as? Variable
             if evaluatedVariable == nil {
                 throw InterpreterError.expressionEvaluationError
             }

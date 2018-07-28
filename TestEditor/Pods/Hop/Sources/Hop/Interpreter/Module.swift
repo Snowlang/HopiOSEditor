@@ -25,7 +25,8 @@ class Module: Evaluable {
         return "Module(\(name))"
     }
 
-    func evaluate(context: Scope, global: Scope) throws -> Evaluable? {
+    func evaluate(context: Scope,
+                  environment: Environment) throws -> Evaluable? {
         return self
     }
     

@@ -51,19 +51,22 @@ struct ForStmt: Evaluable {
     
     // MARK: - Returnable
     
-    func evaluate(context: Scope, global: Scope) throws -> Evaluable? {
-        guard let startVariable = try startExpression.evaluate(context: context, global: global) as? Variable,
+    func evaluate(context: Scope, environment: Environment) throws -> Evaluable? {
+        guard let startVariable = try startExpression.evaluate(context: context,
+                                                               environment: environment) as? Variable,
             let startIndex = startVariable.value as? Int else {
             throw InterpreterError.expressionEvaluationError
         }
         
-        guard let endVariable = try endExpression.evaluate(context: context, global: global) as? Variable,
+        guard let endVariable = try endExpression.evaluate(context: context,
+                                                           environment: environment) as? Variable,
             let endIndex = endVariable.value as? Int else {
                 throw InterpreterError.expressionEvaluationError
         }
 
         var stepIncrement = 1
-        if let stepEvaluation = try stepExpression?.evaluate(context: context, global: global) {
+        if let stepEvaluation = try stepExpression?.evaluate(context: context,
+                                                             environment: environment) {
             guard let stepVariable = stepEvaluation as? Variable,
                 let stepValue = stepVariable.value as? Int else {
                 throw InterpreterError.expressionEvaluationError
@@ -78,7 +81,8 @@ struct ForStmt: Evaluable {
         for i in stride(from: startIndex, to: endIndex, by: stepIncrement) {
             indexVariable.value = i
             
-            _ = try block.evaluate(context: indexContext, global: global)
+            _ = try block.evaluate(context: indexContext,
+                                   environment: environment)
             
             if indexContext.returnedEvaluable != nil {
                 break

@@ -34,7 +34,7 @@ class FunctionDeclarationStmt: Evaluable {
         return description
     }
 
-    func evaluate(context: Scope, global: Scope) throws -> Evaluable? {
+    func evaluate(context: Scope, environment: Environment) throws -> Evaluable? {
         // Compute closure arguments
         var closureArguments: [Argument]?
         
@@ -50,7 +50,8 @@ class FunctionDeclarationStmt: Evaluable {
                     Type.basicTypeHashIds.contains(identifierType.hashId) {
                     type = Type(name: identifierType.name)
                     
-                } else if let evaluatedType = try declaredArgument.typeExpr.evaluate(context: context, global: global),
+                } else if let evaluatedType = try declaredArgument.typeExpr.evaluate(context: context,
+                                                                                     environment: environment),
                     let `class` = evaluatedType as? Class {
                     type = `class`.type
                 
@@ -72,7 +73,8 @@ class FunctionDeclarationStmt: Evaluable {
                 Type.basicTypeHashIds.contains(identifierType.hashId) {
                 type = Type(name: identifierType.name)
                 
-            } else if let evaluatedType = try typeExpr.evaluate(context: context, global: global),
+            } else if let evaluatedType = try typeExpr.evaluate(context: context,
+                                                                environment: environment),
                 let `class` = evaluatedType as? Class {
                 type = `class`.type
             } else {

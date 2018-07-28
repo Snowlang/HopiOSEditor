@@ -28,11 +28,14 @@ class Closure: Evaluable {
     }
 
     // NOTE: unused !!!!!!!
-    func evaluate(context: Scope, global: Scope) throws -> Evaluable? {
+    func evaluate(context: Scope,
+                  environment: Environment) throws -> Evaluable? {
         return self
     }
     
-    func evaluate(arguments: [FunctionCallArgument]?, context: Scope, global: Scope) throws -> Evaluable? {
+    func evaluate(arguments: [FunctionCallArgument]?,
+                  context: Scope,
+                  environment: Environment) throws -> Evaluable? {
         // Create parameters scope
         let parametersContext = Scope(parent: declarationScope)
         if let prototypeArguments = prototype.arguments,
@@ -40,7 +43,7 @@ class Closure: Evaluable {
             for (index, prototypeArgument) in prototypeArguments.enumerated() {
                 
                 var variable: Variable! = try arguments[index].expr.evaluate(context: context,
-                                                                             global: global) as? Variable
+                                                                             environment: environment) as? Variable
                 guard variable != nil else {
                     throw InterpreterError.expressionEvaluationError
                 }
@@ -66,7 +69,8 @@ class Closure: Evaluable {
             }
         }
 
-        _ = try block?.evaluate(context: parametersContext, global: global)
+        _ = try block?.evaluate(context: parametersContext,
+                                environment: environment)
         
         // Get returned expression if needed
         var returnedEvaluable: Evaluable?

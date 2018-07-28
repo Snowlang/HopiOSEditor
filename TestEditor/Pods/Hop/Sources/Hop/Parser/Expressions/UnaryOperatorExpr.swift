@@ -17,23 +17,31 @@ struct UnaryOperatorExpr: Evaluable {
         return "\(unOp.rawValue)" + operand.description
     }
     
-    func evaluate(context: Scope, global: Scope) throws -> Evaluable? {
+    func evaluate(context: Scope,
+                  environment: Environment) throws -> Evaluable? {
         switch unOp {
         case .onesComplement:
-            return try evaluateOnesComplement(context: context, global: global)
+            return try evaluateOnesComplement(context: context,
+                                              environment: environment)
         case .logicalNegation:
-            return try evaluateLogicalNegation(context: context, global: global)
+            return try evaluateLogicalNegation(context: context,
+                                               environment: environment)
         case .plus:
-            return try evaluatePlus(context: context, global: global)
+            return try evaluatePlus(context: context,
+                                    environment: environment)
         case .minus:
-            return try evaluateMinus(context: context, global: global)
+            return try evaluateMinus(context: context,
+                                     environment: environment)
         default:
             return nil
         }
     }
     
-    private func evaluateOnesComplement(context: Scope, global: Scope) throws -> Evaluable? {
-        guard let evaluatedVariable = try operand.evaluate(context: context, global: global) as? Variable else {
+    private func evaluateOnesComplement(context: Scope,
+                                        environment: Environment) throws -> Evaluable? {
+        
+        guard let evaluatedVariable = try operand.evaluate(context: context,
+                                                           environment: environment) as? Variable else {
             throw InterpreterError.expressionEvaluationError
         }
         
@@ -48,8 +56,11 @@ struct UnaryOperatorExpr: Evaluable {
         return Variable(type: .integer, isConstant: true, value: ~(evaluatedValue as! Int))
     }
     
-    private func evaluateLogicalNegation(context: Scope, global: Scope) throws -> Evaluable? {
-        guard let evaluatedVariable = try operand.evaluate(context: context, global: global) as? Variable else {
+    private func evaluateLogicalNegation(context: Scope,
+                                         environment: Environment) throws -> Evaluable? {
+        
+        guard let evaluatedVariable = try operand.evaluate(context: context,
+                                                           environment: environment) as? Variable else {
             throw InterpreterError.expressionEvaluationError
         }
 
@@ -64,8 +75,11 @@ struct UnaryOperatorExpr: Evaluable {
         return Variable(type: .boolean, isConstant: true, value: !(evaluatedValue as! Bool))
     }
     
-    private func evaluatePlus(context: Scope, global: Scope) throws -> Evaluable? {
-        guard let evaluatedVariable = try operand.evaluate(context: context, global: global) as? Variable else {
+    private func evaluatePlus(context: Scope,
+                              environment: Environment) throws -> Evaluable? {
+        
+        guard let evaluatedVariable = try operand.evaluate(context: context,
+                                                           environment: environment) as? Variable else {
             throw InterpreterError.expressionEvaluationError
         }
         
@@ -92,8 +106,11 @@ struct UnaryOperatorExpr: Evaluable {
         }
     }
     
-    private func evaluateMinus(context: Scope, global: Scope) throws -> Evaluable? {
-        guard let evaluatedVariable = try operand.evaluate(context: context, global: global) as? Variable else {
+    private func evaluateMinus(context: Scope,
+                               environment: Environment) throws -> Evaluable? {
+        
+        guard let evaluatedVariable = try operand.evaluate(context: context,
+                                                           environment: environment) as? Variable else {
             throw InterpreterError.expressionEvaluationError
         }
         

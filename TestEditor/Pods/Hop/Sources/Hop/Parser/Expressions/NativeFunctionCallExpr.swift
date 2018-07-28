@@ -26,11 +26,11 @@ struct NativeFunctionCallExpr : Evaluable {
     }
     
     private let arguments: [Argument]?
-    private let evaluation: (_ arguments: [Variable]?) throws -> Variable?
+    private let evaluation: (_ arguments: [Variable]?, _ environment: Environment) throws -> Variable?
     private let type: () -> Type
     
     init(arguments: [Argument]?,
-         evaluation: @escaping (_ arguments: [Variable]?) throws -> Variable?,
+         evaluation: @escaping (_ arguments: [Variable]?, _ environment: Environment) throws -> Variable?,
          type: @escaping () -> Type) {
         self.arguments = arguments
         self.evaluation = evaluation
@@ -50,7 +50,7 @@ struct NativeFunctionCallExpr : Evaluable {
         return description
     }
     
-    func evaluate(context: Scope, global: Scope) throws -> Evaluable? {
+    func evaluate(context: Scope, environment: Environment) throws -> Evaluable? {
         var argumentEvaluations: [Variable]!
         
         // Inject argument value expressions if needed
@@ -65,7 +65,7 @@ struct NativeFunctionCallExpr : Evaluable {
             }
         }
         
-        return try evaluation(argumentEvaluations) ?? Variable(type: .void, isConstant: true, value: nil)
+        return try evaluation(argumentEvaluations, environment) ?? Variable(type: .void, isConstant: true, value: nil)
     }
     
 }

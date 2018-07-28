@@ -71,7 +71,7 @@ class ClassDeclarationStmt: Evaluable {
         return description
     }
     
-    func evaluate(context: Scope, global: Scope) throws -> Evaluable? {
+    func evaluate(context: Scope, environment: Environment) throws -> Evaluable? {
         if context.symbolTable[hashId] != nil {
             throw InterpreterError.classAlreadyDeclared
         }
@@ -99,7 +99,8 @@ class ClassDeclarationStmt: Evaluable {
         // Get superclass if any
         var superclass: Class?
         if let superclassExpr = superclassExpr {
-            superclass = try superclassExpr.evaluate(context: context, global: global) as? Class
+            superclass = try superclassExpr.evaluate(context: context,
+                                                     environment: environment) as? Class
             if superclass == nil {
                 throw InterpreterError.unresolvedIdentifier
             }
@@ -128,7 +129,8 @@ class ClassDeclarationStmt: Evaluable {
                     throw InterpreterError.classMemberAlreadyDeclaredInSuperclass
                 }
 
-                _ = try classPropertyDeclaration.evaluate(context: classScope, global: global)
+                _ = try classPropertyDeclaration.evaluate(context: classScope,
+                                                          environment: environment)
             }
         }
         
@@ -136,7 +138,8 @@ class ClassDeclarationStmt: Evaluable {
         if let classMethodDeclarations = classMethodDeclarations,
             classMethodDeclarations.count > 0 {
             for classMethodDeclaration in classMethodDeclarations {
-                _ = try classMethodDeclaration.evaluate(context: classScope, global: global)
+                _ = try classMethodDeclaration.evaluate(context: classScope,
+                                                        environment: environment)
             }
         }
         
@@ -170,7 +173,8 @@ class ClassDeclarationStmt: Evaluable {
                                                                            typeExpr: prototype.typeExpr)
                 let functionDeclarationStmt = FunctionDeclarationStmt(prototype: instanceMethodPrototype,
                                                                       block: instanceMethodDeclaration.block)
-                _ = try functionDeclarationStmt.evaluate(context: classScope, global: global)
+                _ = try functionDeclarationStmt.evaluate(context: classScope,
+                                                         environment: environment)
             }
         }
 
@@ -178,7 +182,8 @@ class ClassDeclarationStmt: Evaluable {
         if let innerClassDeclarations = self.innerClassDeclarations,
             innerClassDeclarations.count > 0 {
             for innerClassDeclaration in innerClassDeclarations {
-                _ = try innerClassDeclaration.evaluate(context: classScope, global: global)
+                _ = try innerClassDeclaration.evaluate(context: classScope,
+                                                       environment: environment)
             }
         }
         

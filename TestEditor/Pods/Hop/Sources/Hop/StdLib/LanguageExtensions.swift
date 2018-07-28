@@ -77,7 +77,7 @@ private func computeInitializer(in classScope: Scope,
                                        rhs: IdentifierExpr(name: "__array__"))
 
     // Native function call expression for instanstiating swift array
-    let nativeArrayExpr = NativeFunctionCallExpr(arguments: nil, evaluation: { (_) -> Variable? in
+    let nativeArrayExpr = NativeFunctionCallExpr(arguments: nil, evaluation: { (_, _) -> Variable? in
         return Variable(type: .any, isConstant: true, value: NSMutableArray())
     }) {
         return Type.any
@@ -112,7 +112,7 @@ private func computeMethodAppendElement(in classScope: Scope,
                               type: .void)
 
     let closure = getNativeFunctionClosure(prototype: prototype, declarationScope: classScope) {
-        (arguments) in
+        (arguments, _) in
         
         // Self argument
         guard let selfInstance = arguments?[0].value as? Instance,
@@ -188,7 +188,7 @@ private func computeMethodElementAt(in classScope: Scope,
                               type: .any)
     
     let closure = getNativeFunctionClosure(prototype: prototype, declarationScope: classScope) {
-        (arguments) in
+        (arguments, _) in
         
         // Self argument
         guard let selfInstance = arguments?[0].value as? Instance,
@@ -226,7 +226,7 @@ private func computeMethodIsEmpty(in classScope: Scope,
                               type: .boolean)
     
     let closure = getNativeFunctionClosure(prototype: prototype, declarationScope: classScope) {
-        (arguments) in
+        (arguments, _) in
         
         // Self argument
         guard let selfInstance = arguments?.first?.value as? Instance else {
@@ -257,7 +257,7 @@ private func computeMethodCount(in classScope: Scope,
                               type: .integer)
     
     let closure = getNativeFunctionClosure(prototype: prototype, declarationScope: classScope) {
-        (arguments) in
+        (arguments, _) in
         
         // Self argument
         guard let selfInstance = arguments?.first?.value as? Instance else {

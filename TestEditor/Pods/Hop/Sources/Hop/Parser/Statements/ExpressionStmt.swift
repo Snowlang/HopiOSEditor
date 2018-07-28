@@ -21,8 +21,9 @@ struct ExpressionStmt: Evaluable {
         return expr.description
     }
     
-    func evaluate(context: Scope, global: Scope) throws -> Evaluable? {
-        _ = try expr.evaluate(context: context, global: global)
+    func evaluate(context: Scope, environment: Environment) throws -> Evaluable? {
+        _ = try expr.evaluate(context: context,
+                              environment: environment)
         return nil  // Statement does not return
     }
 

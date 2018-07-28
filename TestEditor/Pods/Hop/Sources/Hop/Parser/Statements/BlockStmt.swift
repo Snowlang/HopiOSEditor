@@ -26,12 +26,13 @@ struct BlockStmt: Evaluable {
         return description
     }
     
-    func evaluate(context: Scope, global: Scope) throws -> Evaluable? {
+    func evaluate(context: Scope, environment: Environment) throws -> Evaluable? {
         // Create block context
         let blockContext = Scope(parent: context)
         
         for statement in statements {
-            _ = try statement.evaluate(context: blockContext, global: global)
+            _ = try statement.evaluate(context: blockContext,
+                                       environment: environment)
             
             if blockContext.returnedEvaluable != nil {
                 break

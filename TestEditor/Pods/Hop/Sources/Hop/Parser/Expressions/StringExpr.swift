@@ -20,7 +20,7 @@ class StringExpr: Evaluable {
         return "String(\(value))"
     }
     
-    func evaluate(context: Scope, global: Scope) throws -> Evaluable? {
+    func evaluate(context: Scope, environment: Environment) throws -> Evaluable? {
         return Variable(type: .string, isConstant: true, value: value)
     }
     

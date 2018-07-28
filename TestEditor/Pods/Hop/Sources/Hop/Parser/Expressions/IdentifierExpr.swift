@@ -22,7 +22,7 @@ class IdentifierExpr: Evaluable {
         return "Id(\(name))"
     }
 
-    func evaluate(context: Scope, global: Scope) throws -> Evaluable? {
+    func evaluate(context: Scope, environment: Environment) throws -> Evaluable? {
         guard let symbol = context.getSymbolValue(for: hashId) else {
             throw InterpreterError.unresolvedIdentifier
         }

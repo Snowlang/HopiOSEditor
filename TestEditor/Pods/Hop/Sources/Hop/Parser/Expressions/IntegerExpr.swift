@@ -20,7 +20,7 @@ class IntegerExpr: Evaluable {
         return "Integer(\(value))"
     }
     
-    func evaluate(context: Scope, global: Scope) throws -> Evaluable? {
+    func evaluate(context: Scope, environment: Environment) throws -> Evaluable? {
         return Variable(type: .integer, isConstant: true, value: value)
     }
     

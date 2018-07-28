@@ -25,9 +25,10 @@ struct ReturnStmt: Evaluable {
         return description
     }
     
-    func evaluate(context: Scope, global: Scope) throws -> Evaluable? {
+    func evaluate(context: Scope, environment: Environment) throws -> Evaluable? {
         if let result = result {
-            guard let resultVariable = try result.evaluate(context: context, global: global) as? Variable else {
+            guard let resultVariable = try result.evaluate(context: context,
+                                                           environment: environment) as? Variable else {
                 throw InterpreterError.expressionEvaluationError
             }
             context.returnedEvaluable = resultVariable

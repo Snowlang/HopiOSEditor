@@ -20,11 +20,11 @@ struct Program: Loggable {
         return description
     }
     
-    func perform() throws {
-        let global = Scope(parent: nil)
+    func perform(with environment: Environment) throws {
         let context = Scope(parent: nil)
         importArrayClass(in: context)
-        _ = try block?.evaluate(context: context, global: global)
+        _ = try block?.evaluate(context: context,
+                                environment: environment)
     }
     
 }

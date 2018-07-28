@@ -27,19 +27,26 @@ class WhileStmt: Evaluable {
         return description
     }
     
-    func evaluate(context: Scope, global: Scope) throws -> Evaluable? {
+    func evaluate(context: Scope, environment: Environment) throws -> Evaluable? {
         
-        func evaluateCondition(_ expression: Evaluable, context: Scope, global: Scope) throws -> Bool {
-            guard let conditionVariable = try expression.evaluate(context: context, global: global) as? Variable,
+        func evaluateCondition(_ expression: Evaluable,
+                               context: Scope,
+                               environment: Environment) throws -> Bool {
+            
+            guard let conditionVariable = try expression.evaluate(context: context,
+                                                                  environment: environment) as? Variable,
                 let conditionValue = conditionVariable.value as? Bool else {
                     throw InterpreterError.expressionEvaluationError
             }
             return conditionValue
         }
         
-        while try evaluateCondition(conditionExpression, context: context, global: global) {
+        while try evaluateCondition(conditionExpression,
+                                    context: context,
+                                    environment: environment) {
 
-            _ = try block.evaluate(context: context, global: global)
+            _ = try block.evaluate(context: context,
+                                   environment: environment)
             
             if context.returnedEvaluable != nil {
                 break

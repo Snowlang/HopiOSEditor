@@ -16,7 +16,8 @@ class Null: Evaluable {
         return "Null"
     }
     
-    func evaluate(context: Scope, global: Scope) throws -> Evaluable? {
+    func evaluate(context: Scope,
+                  environment: Environment) throws -> Evaluable? {
         return self
     }
     

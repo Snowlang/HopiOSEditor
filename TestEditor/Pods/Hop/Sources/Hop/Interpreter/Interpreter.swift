@@ -10,36 +10,18 @@ import Foundation
 
 
 public class Interpreter {
-
-    public class Configuration {
-        
-        let messenger: Messenger?
-        let isDebug: Bool?
-        
-        public init(messenger: Messenger?, isDebug: Bool?) {
-            self.messenger = messenger
-            self.isDebug = isDebug
-        }
-        
-    }
     
-    private var messenger: Messenger?
-    private var isDebug: Bool = false
+    private var environment: Environment
     
-    public init() {}
-    
-    public init(config: Configuration) {
-        self.messenger = config.messenger
-        if let isDebug = config.isDebug {
-            self.isDebug = isDebug
-        }
+    public init(environment: Environment) {
+        self.environment = environment
     }
     
     public func runScript(_ script: String) throws {
         let lexer = Lexer(script: script)
         let parser = Parser(with: lexer)
         if let program = try parser.parseProgram() {
-            try program.perform()
+            try program.perform(with: environment)
         }
     }
     
